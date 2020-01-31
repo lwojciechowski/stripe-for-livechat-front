@@ -1,10 +1,11 @@
 import React from "react";
 
 import "./App.css";
+
+import { Router } from "@reach/router";
 import Auth from "./Auth";
 import LogInWithLiveChat from "./LoginWithLiveChat";
 import Install from "./install";
-import { Router } from "@reach/router";
 
 const LC_CLIENT_ID = "457b5f43837982ca7b545c04441ae428";
 
@@ -17,7 +18,7 @@ function App() {
       )}
     >
       <Router>
-        <Install path="/install" exact />
+        <Install path="install/*" />
       </Router>
     </Auth>
   );

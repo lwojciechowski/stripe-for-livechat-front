@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { accountsSdk } from "@livechat/accounts-sdk";
-import { Loader } from "@livechat/design-system";
+import { authRef } from "./authRef";
+import Loading from "./Loading";
 
 const Auth = ({ children, signIn, clientId }) => {
   const [loading, setLoading] = useState(true);
@@ -15,6 +16,7 @@ const Auth = ({ children, signIn, clientId }) => {
         if (data) {
           console.log(data);
           setAuth(data);
+          authRef.token = data.access_token;
         }
         if (error) {
           console.error(error);
@@ -26,7 +28,7 @@ const Auth = ({ children, signIn, clientId }) => {
   if (loading) {
     return (
       <div>
-        <Loader size="large" />
+        <Loading />
       </div>
     );
   }
@@ -39,5 +41,4 @@ const Auth = ({ children, signIn, clientId }) => {
 };
 
 export const AuthContext = React.createContext(null);
-
 export default Auth;

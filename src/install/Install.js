@@ -1,13 +1,59 @@
-import React from "react";
-import ConnectWithStripe from "./ConnectWithStripe";
+import React, { useEffect, useState } from "react";
+import queryString from "query-string";
+import { navigate, Router } from "@reach/router";
+import {
+  createInstallation,
+  deleteInstallation,
+  getInstallation
+} from "../api";
+import Loading from "../Loading";
+import Connected from "./Connected";
+import Connect from "./Connect";
 
-const STRIPE_CLIENT_ID = "ca_GdSaQGaBdnKTQiBh0f906tM21cBZVqtH";
+const Install = ({ location }) => {
+  const [loading, setLoading] = useState(true);
+  const [account, setAccount] = useState(null);
+  const [queryParams] = useState(queryString.parse(location.search));
 
-const Install = () => {
+  useEffect(() => {
+    (async () => {
+      if (queryParams.code) {
+        await createInstallation(queryParams.code);
+      }
+
+      try {
+        const resp = await getInstallation();
+        setAccount(resp.data);
+        await navigate("/install/connected");
+      } catch (e) {
+        await navigate("/install");
+      }
+      setLoading(false);
+    })();
+  }, [queryParams]);
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  const handleDelete = () => {
+    (async () => {
+      await deleteInstallation();
+      setAccount(null);
+      await navigate("/install");
+    })();
+  };
+
   return (
-    <ConnectWithStripe
-      href={`https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${STRIPE_CLIENT_ID}&scope=read_write`}
-    />
+    <Router>
+      <Connect path="/" exact />
+      <Connected
+        path="connected"
+        exact
+        account={account}
+        onDelete={handleDelete}
+      />
+    </Router>
   );
 };
 
