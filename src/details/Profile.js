@@ -31,12 +31,11 @@ const Profile = ({ customer, plans, profileRef }) => {
             subtitle: "12,00zł",
             buttons: [
               {
-                type: "webview",
+                type: "url",
                 text: "Buy now",
                 postback_id: "open_url",
                 user_ids: [],
-                value: `https://stripe-for-livechat.netlify.com/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`,
-                webview_height: "full"
+                value: `https://stripe-for-livechat.netlify.com/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`
               }
             ]
           }

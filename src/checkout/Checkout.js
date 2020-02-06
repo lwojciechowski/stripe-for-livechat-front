@@ -6,6 +6,7 @@ import queryString from "query-string";
 import createMomentsSDK from "@livechat/moments-sdk";
 import Success from "./Success";
 import Cancel from "./Cancel";
+import Redirect from "./Redirect";
 
 const STRIPE_PUBLIC_KEY = process.env.REACT_APP_STRIPE_PUBLIC_KEY;
 
@@ -51,6 +52,13 @@ const Checkout = ({ location }) => {
         path="/start"
         stripeRef={stripeRef}
         sessionId={queryParams.session_id}
+        accountId={queryParams.account_id}
+      />
+      <Redirect
+        path="/redirect"
+        stripeRef={stripeRef}
+        sessionId={queryParams.session_id}
+        accountId={queryParams.account_id}
       />
       <Success
         path="/success"
