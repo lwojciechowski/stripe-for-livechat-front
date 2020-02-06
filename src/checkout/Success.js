@@ -1,13 +1,9 @@
 import React, { useEffect } from "react";
 import Loading from "../Loading";
 
-const Success = ({ momentsRef }) => {
+const Success = () => {
   useEffect(() => {
-    momentsRef.current.sendSystemMessage({
-      text: "Customer completed payment successfully.",
-      recipients: "agents"
-    });
-    momentsRef.close();
+    window.opener.postMessage({ status: "success" }, "*");
   }, []);
   return <Loading />;
 };

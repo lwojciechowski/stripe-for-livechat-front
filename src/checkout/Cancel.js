@@ -1,14 +1,10 @@
 import React, { useEffect } from "react";
 import Loading from "../Loading";
 
-const Cancel = ({ momentsRef }) => {
+const Cancel = () => {
   useEffect(() => {
-    momentsRef.current.sendSystemMessage({
-      text: "Customer canceled or payment failed.",
-      recipients: "agents"
-    });
-    momentsRef.close();
-  }, []);
+    window.opener.postMessage({ status: "cancel" }, "*");
+  });
   return <Loading />;
 };
 

@@ -53,18 +53,16 @@ const Checkout = ({ location }) => {
         stripeRef={stripeRef}
         sessionId={queryParams.session_id}
         accountId={queryParams.account_id}
+        momentsRef={momentsRef}
       />
+
       <Redirect
         path="/redirect"
         stripeRef={stripeRef}
         sessionId={queryParams.session_id}
         accountId={queryParams.account_id}
       />
-      <Success
-        path="/success"
-        sessionId={queryParams.session_id}
-        momentsRef={momentsRef}
-      />
+      <Success path="/success" sessionId={queryParams.session_id} />
       <Cancel path="/cancel" momentsRef={momentsRef} />
     </Router>
   );

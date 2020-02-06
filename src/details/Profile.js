@@ -3,7 +3,6 @@ import React, { useContext, useState } from "react";
 import { css, jsx } from "@emotion/core";
 import { Button } from "@livechat/design-system";
 import { createCheckoutSession, sendEvent } from "../api";
-import { AuthContext } from "../Auth";
 
 const containerCss = css`
   table.customer {
@@ -36,7 +35,7 @@ const Profile = ({ customer, plans, profileRef }) => {
                 postback_id: "open_url",
                 user_ids: [],
                 value: `https://stripe-for-livechat.netlify.com/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`,
-                webview_height: "full"
+                webview_height: "compact"
               }
             ]
           }
