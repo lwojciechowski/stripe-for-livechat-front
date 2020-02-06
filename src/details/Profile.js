@@ -34,7 +34,7 @@ const Profile = ({ customer, plans, profileRef }) => {
                 text: "Buy now",
                 postback_id: "open_url",
                 user_ids: [],
-                value: `https://stripe-for-livechat.netlify.com/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`,
+                value: `https://localhost:3000/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`,
                 webview_height: "compact"
               }
             ]

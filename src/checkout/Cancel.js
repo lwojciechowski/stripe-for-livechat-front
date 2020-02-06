@@ -3,7 +3,21 @@ import Loading from "../Loading";
 
 const Cancel = () => {
   useEffect(() => {
-    window.opener.postMessage({ status: "cancel" }, "*");
+    window.addEventListener(
+      "message",
+      event => {
+        if (
+          event.source !== window &&
+          event.origin === window.location.origin
+        ) {
+          event.source.postMessage(
+            { status: "cancel" },
+            window.location.origin
+          );
+        }
+      },
+      false
+    );
   });
   return <Loading />;
 };
