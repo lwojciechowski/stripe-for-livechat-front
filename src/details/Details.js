@@ -76,7 +76,14 @@ const Details = () => {
 
   return (
     <div css={containerCss}>
-      {match && <Profile key={match.id} customer={match} plans={plans} />}
+      {match && (
+        <Profile
+          key={match.id}
+          customer={match}
+          profileRef={profileRef}
+          plans={plans}
+        />
+      )}
       {!match && (
         <Connect
           customers={customers}

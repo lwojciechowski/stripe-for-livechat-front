@@ -42,6 +42,18 @@ export const getCoupons = () => {
   return axios.get(`${API_URL}/coupons`, getConfig());
 };
 
+export const createCheckoutSession = params => {
+  return axios.post(`${API_URL}/checkout-session`, params, getConfig());
+};
+
+export const sendEvent = (chatId, event) => {
+  return axios.post(
+    "https://api.livechatinc.com/v3.1/agent/action/send_event",
+    { chat_id: chatId, event },
+    getConfig()
+  );
+};
+
 const getConfig = params => {
   return {
     ...params,

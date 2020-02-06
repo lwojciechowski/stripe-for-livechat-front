@@ -1,7 +1,9 @@
 /**@jsx jsx*/
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { css, jsx } from "@emotion/core";
 import { Button } from "@livechat/design-system";
+import { createCheckoutSession, sendEvent } from "../api";
+import { AuthContext } from "../Auth";
 
 const containerCss = css`
   table.customer {
@@ -14,59 +16,84 @@ const containerCss = css`
   }
 `;
 
-const Profile = ({ customer, plans }) => {
+const Profile = ({ customer, plans, profileRef }) => {
   const [chooseSubscription, setChooseSubscription] = useState(false);
   const handleSendSubscription = () => {
-    setChooseSubscription(true);
+    createCheckoutSession({
+      items: [{ name: "Shoes", quantity: 1, amount: 1200, currency: "pln" }]
+    }).then(resp => {
+      sendEvent(profileRef.current.chat.chat_id, {
+        type: "rich_message",
+        template_id: "cards",
+        elements: [
+          {
+            title: "Shoes",
+            subtitle: "12,00zł",
+            buttons: [
+              {
+                type: "webview",
+                text: "Buy now",
+                postback_id: "open_url",
+                user_ids: [],
+                value: `https://stripe-for-livechat.herokuapp.com/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`,
+                webview_height: "full"
+              }
+            ]
+          }
+        ]
+      });
+    });
+    // setChooseSubscription(true);
   };
 
   return (
     <div css={containerCss}>
       <h2>Customer in Stripe</h2>
       <table className="customer">
-        <tr>
-          <td>ID</td>
-          <td>{customer.id}</td>
-        </tr>
-        <tr>
-          <td>Email</td>
-          <td>{customer.email}</td>
-        </tr>
-        {customer.name && (
+        <tbody>
           <tr>
-            <td>Name</td>
-            <td>{customer.name}</td>
+            <td>ID</td>
+            <td>{customer.id}</td>
           </tr>
-        )}
-        <tr>
-          <td>Created at</td>
-          <td>{new Date(customer.created * 1000).toLocaleString()}</td>
-        </tr>
-        {customer.address.city && (
           <tr>
-            <td>Address</td>
-            <td>
-              {customer.address.line1}
-              {customer.address.line1 && <br />}
-              {customer.address.line2}
-              {customer.address.line2 && <br />}
-              {customer.address.postal_code} {customer.address.city}
-              <br />
-              {customer.address.country}
-            </td>
+            <td>Email</td>
+            <td>{customer.email}</td>
           </tr>
-        )}
-
-        <tr>
-          <td>Delinquent</td>
-          <td>{customer.delinquent ? "Yes" : "No"}</td>
-        </tr>
-        {customer.description && (
+          {customer.name && (
+            <tr>
+              <td>Name</td>
+              <td>{customer.name}</td>
+            </tr>
+          )}
           <tr>
-            <td>Description</td>
-            <td>{customer.description}</td>
+            <td>Created at</td>
+            <td>{new Date(customer.created * 1000).toLocaleString()}</td>
           </tr>
-        )}
+          {customer.address.city && (
+            <tr>
+              <td>Address</td>
+              <td>
+                {customer.address.line1}
+                {customer.address.line1 && <br />}
+                {customer.address.line2}
+                {customer.address.line2 && <br />}
+                {customer.address.postal_code} {customer.address.city}
+                <br />
+                {customer.address.country}
+              </td>
+            </tr>
+          )}
+          <tr>
+            <td>Delinquent</td>
+            <td>{customer.delinquent ? "Yes" : "No"}</td>
+          </tr>
+          {customer.description && (
+            <tr>
+              <td>Description</td>
+              <td>{customer.description}</td>
+            </tr>
+          )}
+        </tbody>
       </table>
       <h2>Subscription</h2>
       {!chooseSubscription && (

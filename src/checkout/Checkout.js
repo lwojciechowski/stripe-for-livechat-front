@@ -7,7 +7,7 @@ import createMomentsSDK from "@livechat/moments-sdk";
 import Success from "./Success";
 import Cancel from "./Cancel";
 
-const STRIPE_CLIENT_ID = process.env.REACT_APP_STRIPE_CLIENT_ID;
+const STRIPE_PUBLIC_KEY = process.env.REACT_APP_STRIPE_PUBLIC_KEY;
 
 const Checkout = ({ location }) => {
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ const Checkout = ({ location }) => {
   useEffect(() => {
     const script = document.createElement("script");
     script.onload = () => {
-      stripeRef.current = window.Stripe(STRIPE_CLIENT_ID, {
+      stripeRef.current = window.Stripe(STRIPE_PUBLIC_KEY, {
         stripeAccount: queryParams.account_id
       });
       setLoading(false);
