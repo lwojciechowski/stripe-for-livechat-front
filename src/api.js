@@ -19,11 +19,36 @@ export const deleteInstallation = () => {
   return axios.delete(`${API_URL}/installation`, getConfig());
 };
 
-const getConfig = () => {
+export const searchCustomer = params => {
+  return axios.get(`${API_URL}/customers`, getConfig({ params }));
+};
+
+export const linkCustomer = (stripeId, lcId) => {
+  return axios.post(
+    `${API_URL}/customers/link`,
+    {
+      stripe_id: stripeId,
+      lc_id: lcId
+    },
+    getConfig()
+  );
+};
+
+export const getPlans = () => {
+  return axios.get(`${API_URL}/plans`, getConfig());
+};
+
+export const getCoupons = () => {
+  return axios.get(`${API_URL}/coupons`, getConfig());
+};
+
+const getConfig = params => {
   return {
+    ...params,
     headers: {
       Authorization: `Bearer ${authRef.token}`,
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      ...params?.headers
     }
   };
 };

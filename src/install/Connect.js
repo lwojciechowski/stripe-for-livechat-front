@@ -1,8 +1,6 @@
 /**@jsx jsx */
 
-import React, { useState } from "react";
 import { css, jsx } from "@emotion/core";
-import { Button } from "@livechat/design-system";
 import ConnectWithStripe from "./ConnectWithStripe";
 
 const STRIPE_CLIENT_ID = process.env.REACT_APP_STRIPE_CLIENT_ID;
