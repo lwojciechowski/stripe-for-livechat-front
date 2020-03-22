@@ -1,8 +1,10 @@
-import React, { Suspense } from "react";
+/**@jsx jsx*/
 
 import "./App.css";
 
+import React, { Suspense } from "react";
 import { Router } from "@reach/router";
+import { css, jsx } from "@emotion/core";
 import Auth from "./Auth";
 import LogInWithLiveChat from "./LoginWithLiveChat";
 import Loading from "./Loading";
@@ -13,14 +15,25 @@ const Checkout = React.lazy(() => import("./checkout"));
 
 const LC_CLIENT_ID = process.env.REACT_APP_LC_CLIENT_ID;
 
+const fullscreenCss = css`
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 function App() {
   return (
     <Auth
       clientId={LC_CLIENT_ID}
       signIn={authInstanceRef => (
-        <LogInWithLiveChat
-          onClick={() => authInstanceRef.current.openPopup()}
-        />
+        <div css={fullscreenCss}>
+          <LogInWithLiveChat
+            onClick={() => authInstanceRef.current.openPopup()}
+          />
+        </div>
       )}
     >
       <Suspense fallback={<Loading />}>

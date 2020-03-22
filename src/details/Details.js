@@ -3,7 +3,12 @@ import { useRef } from "react";
 import { css, jsx } from "@emotion/core";
 import { useCallback, useEffect, useState } from "react";
 import { createDetailsWidget } from "@livechat/agent-app-sdk";
-import { getCoupons, getPlans, linkCustomer, searchCustomer } from "../api";
+import {
+  createCustomer,
+  getSubscriptions,
+  linkCustomer,
+  searchCustomer
+} from "../api";
 import Connect from "./Connect";
 import Profile from "./Profile";
 import Loading from "../Loading";
@@ -16,8 +21,6 @@ const Details = () => {
   const [loading, setLoading] = useState(true);
   const [match, setMatch] = useState(null);
   const [customers, setCustomers] = useState([]);
-  const [plans, setPlans] = useState([]);
-  const [coupons, setCoupons] = useState([]);
 
   const fetchProfile = useCallback(async profile => {
     let customers = { data: [] };
@@ -33,16 +36,6 @@ const Details = () => {
     profileRef.current = profile;
   }, []);
 
-  const fetchPlans = useCallback(async () => {
-    const resp = await getPlans();
-    setPlans(resp.data);
-  }, []);
-
-  const fetchCoupons = useCallback(async () => {
-    const resp = await getCoupons();
-    setCoupons(resp.data);
-  }, []);
-
   useEffect(() => {
     createDetailsWidget().then(widget => {
       widget.on("customer_profile", async profile => {
@@ -56,17 +49,23 @@ const Details = () => {
         }
       });
     });
-  }, []);
-
-  useEffect(() => {
-    fetchPlans();
-    fetchCoupons();
-  }, []);
+  }, [fetchProfile]);
 
   const handleLink = useCallback(async customer => {
     setLoading(true);
     await linkCustomer(customer.id, profileRef.current.id);
     setMatch(customer);
+    setLoading(false);
+  }, []);
+
+  const handleCreate = useCallback(async () => {
+    setLoading(true);
+    const resp = await createCustomer({
+      email: profileRef.current.email,
+      name: profileRef.current.name,
+      lc_id: profileRef.current.id
+    });
+    setMatch(resp.data);
     setLoading(false);
   }, []);
 
@@ -77,18 +76,13 @@ const Details = () => {
   return (
     <div css={containerCss}>
       {match && (
-        <Profile
-          key={match.id}
-          customer={match}
-          profileRef={profileRef}
-          plans={plans}
-        />
+        <Profile key={match.id} customer={match} profileRef={profileRef} />
       )}
       {!match && (
         <Connect
           customers={customers}
           onLink={handleLink}
-          onCreate={() => {}}
+          onCreate={handleCreate}
         />
       )}
     </div>

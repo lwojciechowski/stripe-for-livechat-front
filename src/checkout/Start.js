@@ -89,11 +89,13 @@ const Start = ({ stripeRef, sessionId, accountId }) => {
             momentsRef.current.close();
             clearInterval(i);
             break;
+          default:
+            break;
         }
       },
       false
     );
-  }, [sessionId, stripeRef]);
+  }, [sessionId, accountId]);
 
   if (loading) {
     return <Loading />;

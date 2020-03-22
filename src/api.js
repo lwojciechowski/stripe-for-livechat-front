@@ -23,6 +23,18 @@ export const searchCustomer = params => {
   return axios.get(`${API_URL}/customers`, getConfig({ params }));
 };
 
+export const createCustomer = params => {
+  return axios.post(`${API_URL}/customers`, params, getConfig());
+};
+
+export const getCharges = params => {
+  return axios.get(`${API_URL}/customers/charges`, getConfig({ params }));
+};
+
+export const getSubscriptions = params => {
+  return axios.get(`${API_URL}/customers/subscriptions`, getConfig({ params }));
+};
+
 export const linkCustomer = (stripeId, lcId) => {
   return axios.post(
     `${API_URL}/customers/link`,
@@ -40,6 +52,10 @@ export const getPlans = () => {
 
 export const getCoupons = () => {
   return axios.get(`${API_URL}/coupons`, getConfig());
+};
+
+export const getCountry = code => {
+  return axios.get(`${API_URL}/country?code=${code}`, getConfig());
 };
 
 export const createCheckoutSession = params => {

@@ -11,6 +11,7 @@ const linkCss = css`
   border: 1px solid #ddd;
   border-radius: 3px;
   padding: 8px 24px 9px;
+  cursor: pointer;
 
   &:hover {
     border-color: #888;

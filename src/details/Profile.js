@@ -1,54 +1,102 @@
 /**@jsx jsx*/
-import React, { useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { css, jsx } from "@emotion/core";
-import { Button } from "@livechat/design-system";
-import { createCheckoutSession, sendEvent } from "../api";
+import { Button, Loader } from "@livechat/design-system";
+import { MdCheck, MdClose, MdLaunch } from "react-icons/md";
+import { getCharges, getSubscriptions } from "../api";
+import Payment from "./Payment";
+import Header from "./Header";
 
 const containerCss = css`
-  table.customer {
+  table.data {
     width: 100%;
-    margin-bottom: 1em;
   }
+
   td:first-of-type {
     padding-bottom: 5px;
     font-weight: bold;
   }
+
+  .charge {
+    display: flex;
+    align-items: center;
+    svg {
+      margin-right: 10px;
+      color: #a2260d;
+    }
+  }
+
+  .charge.succeeded svg {
+    fill: #2a9558;
+  }
+
+  .options {
+    button:not(:first-of-type) {
+      margin-top: 10px;
+    }
+  }
+
+  .subscription {
+    strong {
+      font-weight: bold;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    ul li {
+      margin: 0;
+      padding: 0;
+
+      margin-bottom: 5px;
+    }
+  }
 `;
 
 const Profile = ({ customer, plans, profileRef }) => {
-  const [chooseSubscription, setChooseSubscription] = useState(false);
-  const handleSendSubscription = () => {
-    createCheckoutSession({
-      items: [{ name: "Shoes", quantity: 1, amount: 1200, currency: "pln" }]
-    }).then(resp => {
-      sendEvent(profileRef.current.chat.chat_id, {
-        type: "rich_message",
-        template_id: "cards",
-        elements: [
-          {
-            title: "Shoes",
-            subtitle: "12,00zł",
-            buttons: [
-              {
-                type: "webview",
-                text: "Buy now",
-                postback_id: "open_url",
-                user_ids: [],
-                value: `https://localhost:3000/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`,
-                webview_height: "compact"
-              }
-            ]
-          }
-        ]
+  const [state, setState] = useState("profile");
+  const [charges, setCharges] = useState(null);
+  const [subscriptions, setSubscriptions] = useState(null);
+
+  useEffect(() => {
+    setCharges(null);
+    setSubscriptions(null);
+    (async () => {
+      let resp = await getCharges({ stripe_customer_id: customer.id });
+      setCharges(resp.data);
+
+      resp = await getSubscriptions({
+        stripe_customer_id: customer.id
       });
-    });
-    // setChooseSubscription(true);
+      setSubscriptions(resp.data);
+    })();
+  }, [customer]);
+
+  const handleSendSubscription = () => {
+    setState("subscription");
   };
+
+  const handleOpenStripe = () => {
+    window.open(
+      `https://dashboard.stripe.com/customers/${customer.id}`,
+      "stripe"
+    );
+  };
+  if (state === "subscription") {
+    return (
+      <Payment
+        customer={customer}
+        plans={plans}
+        profileRef={profileRef}
+        onClose={() => setState("profile")}
+      />
+    );
+  }
 
   return (
     <div css={containerCss}>
-      <h2>Customer in Stripe</h2>
-      <table className="customer">
+      <Header>Customer</Header>
+      <table className="data">
         <tbody>
           <tr>
             <td>ID</td>
@@ -94,18 +142,76 @@ const Profile = ({ customer, plans, profileRef }) => {
           )}
         </tbody>
       </table>
-      <h2>Subscription</h2>
-      {!chooseSubscription && (
+      <Header>Last charges</Header>
+      <table>
+        <tbody>
+          {charges === null && <Loader size="small" />}
+          {charges &&
+            charges.map(c => (
+              <tr>
+                <td className={`charge ${c.status}`}>
+                  {c.status === "succeeded" ? <MdCheck /> : <MdClose />}
+                  <div>
+                    {(c.amount / 100).toFixed(2)} {c.currency.toUpperCase()}{" "}
+                    {c.status}
+                    <br />
+                    <small>{new Date(c.created * 1000).toLocaleString()}</small>
+                  </div>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+
+      <Header>Subscription</Header>
+      {!subscriptions && <em>No active subscription</em>}
+      {subscriptions && (
+        <div className="subscription">
+          {subscriptions.map(s => (
+            <table className="data">
+              <tbody>
+                <tr>
+                  <td>Product</td>
+                  <td>
+                    {s.plan.product.name} -{" "}
+                    <span className="nickname">{s.plan.nickname}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Next payment:</td>
+                  <td>
+                    <strong>{(s.plan.amount / 100).toFixed(2)}</strong>{" "}
+                    {s.plan.currency.toUpperCase()} at{" "}
+                    {new Date(s.current_period_end * 1000).toLocaleDateString()}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Status</td>
+                  <td>{s.status}</td>
+                </tr>
+              </tbody>
+            </table>
+          ))}
+        </div>
+      )}
+
+      <Header>Options</Header>
+      <div className="options">
+        <Button fullWidth primary onClick={handleSendSubscription}>
+          Send Payment
+        </Button>
+        {/*<Button fullWidth onClick={handleSendSubscription}>*/}
+        {/*  Send One Time Payment*/}
+        {/*</Button>*/}
         <Button
           fullWidth
-          primary
-          disabled={!plans.length}
-          onClick={handleSendSubscription}
+          icon={<MdLaunch />}
+          onClick={handleOpenStripe}
+          secondary
         >
-          Send Subscription
+          See in Stripe
         </Button>
-      )}
-      {chooseSubscription && {}}
+      </div>
     </div>
   );
 };
