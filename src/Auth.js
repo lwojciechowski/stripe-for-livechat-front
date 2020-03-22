@@ -14,7 +14,6 @@ const Auth = ({ children, signIn, clientId }) => {
       onIdentityFetched: (error, data) => {
         setLoading(false);
         if (data) {
-          console.log(data);
           setAuth(data);
           authRef.token = data.access_token;
         }
