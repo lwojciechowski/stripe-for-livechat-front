@@ -37,7 +37,7 @@ const Start = ({ stripeRef, sessionId, accountId }) => {
   const handleClick = useCallback(() => {
     setLoading(true);
     const child = window.open(
-      `https://localhost:3000/checkout/redirect?session_id=${sessionId}&account_id=${accountId}`,
+      `/checkout/redirect?session_id=${sessionId}&account_id=${accountId}`,
       "stripe-for-livechat",
       "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=1024,height=768"
     );

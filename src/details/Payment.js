@@ -3,6 +3,7 @@
 import React from "react";
 import Header from "./Header";
 import { MdArrowBack, MdLaunch } from "react-icons/md";
+import { FaRegTrashAlt } from "react-icons/fa";
 import { css, jsx } from "@emotion/core";
 import { Form, Field } from "react-final-form";
 import FFInputField from "./FFInputField";
@@ -32,7 +33,14 @@ const containerCss = css`
     width: 100%;
   }
 
+  .trash {
+    display: block;
+    float: right;
+    cursor: pointer;
+  }
+
   .item {
+    position: relative;
     background: #f6f6f9;
     border-radius: 10px;
     padding: 20px;
@@ -64,8 +72,6 @@ const getPlanItemBody = props => (
 );
 
 const getCurrencyItemBody = props => <div id={props.id}>{props.name}</div>;
-
-const getCouponItemBody = props => <div id={props.id}>{props.name}</div>;
 
 const Payment = ({ onClose, profileRef, customer }) => {
   const [plans, setPlans] = useState(null);
@@ -147,7 +153,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
                 text: "Buy now",
                 postback_id: "open_url",
                 user_ids: [],
-                value: `https://localhost:3000/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`,
+                value: `https://stripe-for-livechat.99bits.xyz/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`,
                 webview_height: "compact"
               }
             ]
@@ -155,6 +161,35 @@ const Payment = ({ onClose, profileRef, customer }) => {
         ]
       });
     });
+  };
+
+  const validate = vals => {
+    const errors = {};
+
+    if (!vals.title && !vals.subtitle && !vals.image) {
+      errors.title = "Title, subtitle or image required";
+    }
+
+    vals.items.forEach((item, i) => {
+      if (item.type === "onetime") {
+      }
+
+      if (!item.quantity) {
+        errors[`items[${i}].quantity`] = "Quantity is required";
+      }
+      if (item.type === "onetime") {
+        if (!item.name) {
+          errors[`items[${i}].name`] = "Name is required";
+        }
+        if (!item.amount) {
+          errors[`items[${i}].amount`] = "Amount is required";
+        }
+        if (!item.currency) {
+          errors[`items[${i}].currency`] = "Currency is required";
+        }
+      }
+    });
+    return errors;
   };
 
   if (plans === null || country === null) {
@@ -174,15 +209,11 @@ const Payment = ({ onClose, profileRef, customer }) => {
         initialValues={{
           items: [{ ...defaultItem, plan: plansItems[0]?.key }]
         }}
-        validate={vals => {
-          const errors = {};
-
-          return errors;
-        }}
+        validate={validate}
         render={({ handleSubmit, touched, errors, values }) => (
           <>
             <form onSubmit={handleSubmit}>
-              {JSON.stringify(values, null, " ")}
+              {/*{JSON.stringify(values, null, " ")}*/}
               <Field
                 id="title"
                 component={FFInputField}
@@ -191,6 +222,12 @@ const Payment = ({ onClose, profileRef, customer }) => {
                 labelText="Order title"
                 description="Order title visible in rich message"
                 placeholder=""
+                error={
+                  touched.title &&
+                  touched.subtitle &&
+                  touched.image &&
+                  errors.title
+                }
               />
               <Field
                 id="subtitle"
@@ -219,7 +256,16 @@ const Payment = ({ onClose, profileRef, customer }) => {
                     <>
                       {fields.map((name, index) => (
                         <>
-                          <span className="item-title">Item #{index + 1}</span>
+                          <span className="item-title">
+                            Item #{index + 1}{" "}
+                            {fields.length > 1 && (
+                              <FaRegTrashAlt
+                                className="trash"
+                                onClick={() => fields.remove(index)}
+                              />
+                            )}
+                          </span>
+
                           <div className="item">
                             <FieldGroup
                               inline
@@ -301,6 +347,10 @@ const Payment = ({ onClose, profileRef, customer }) => {
                                       component={FFInputField}
                                       fullWidth
                                       name={`${name}.quantity`}
+                                      error={
+                                        touched[name + ".quantity"] &&
+                                        errors[name + ".quantity"]
+                                      }
                                       labelText="Quantity"
                                       placeholder="1"
                                     />
@@ -319,6 +369,10 @@ const Payment = ({ onClose, profileRef, customer }) => {
                                     labelText="Name"
                                     description="The name for the line item."
                                     placeholder=""
+                                    error={
+                                      touched[name + ".name"] &&
+                                      errors[name + ".name"]
+                                    }
                                   />
                                   <Field
                                     id={`${name}.quantity`}
@@ -328,6 +382,10 @@ const Payment = ({ onClose, profileRef, customer }) => {
                                     labelText="Quantity"
                                     description="The quantity of the line item being purchased."
                                     placeholder=""
+                                    error={
+                                      touched[name + ".quantity"] &&
+                                      errors[name + ".quantity"]
+                                    }
                                   />
                                 </FieldGroup>
                                 <FieldGroup inline stretch>
@@ -339,6 +397,10 @@ const Payment = ({ onClose, profileRef, customer }) => {
                                     labelText="Amount"
                                     description="The amount to be collected per unit of the line item."
                                     placeholder=""
+                                    error={
+                                      touched[name + ".amount"] &&
+                                      errors[name + ".amount"]
+                                    }
                                   />
                                   <Field name={`${name}.currency`}>
                                     {({ input, meta }) => (
@@ -356,6 +418,10 @@ const Payment = ({ onClose, profileRef, customer }) => {
                                         }
                                         selected={input.value}
                                         searchPlaceholder="Search..."
+                                        error={
+                                          touched[name + ".currency"] &&
+                                          errors[name + ".currency"]
+                                        }
                                       />
                                     )}
                                   </Field>
