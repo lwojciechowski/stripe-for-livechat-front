@@ -146,7 +146,8 @@ const Profile = ({ customer, plans, profileRef }) => {
       <table>
         <tbody>
           {charges === null && <Loader size="small" />}
-          {charges &&
+          {charges.length === 0 && <em>No charges</em>}
+          {charges.length > 0 &&
             charges.map(c => (
               <tr>
                 <td className={`charge ${c.status}`}>
@@ -164,8 +165,9 @@ const Profile = ({ customer, plans, profileRef }) => {
       </table>
 
       <Header>Subscription</Header>
-      {!subscriptions && <em>No active subscription</em>}
-      {subscriptions && (
+      {subscriptions === null && <Loader size="small" />}
+      {subscriptions.length === 0 && <em>No active subscription</em>}
+      {subscriptions.length > 0 && (
         <div className="subscription">
           {subscriptions.map(s => (
             <table className="data">
