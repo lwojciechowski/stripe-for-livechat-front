@@ -140,7 +140,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
     }
 
     createCheckoutSession(params).then(resp => {
-      sendEvent(profileRef.current.chat.chat_id, {
+      const event = {
         type: "rich_message",
         template_id: "cards",
         elements: [
@@ -159,7 +159,11 @@ const Payment = ({ onClose, profileRef, customer }) => {
             ]
           }
         ]
-      });
+      };
+      if (vals.image !== "") {
+        event.elements[0].image = { url: vals.image };
+      }
+      sendEvent(profileRef.current.chat.chat_id, event);
     });
   };
 
