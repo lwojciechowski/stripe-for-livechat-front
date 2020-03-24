@@ -26,24 +26,26 @@ const fullscreenCss = css`
 
 function App() {
   return (
-    <Auth
-      clientId={LC_CLIENT_ID}
-      signIn={authInstanceRef => (
-        <div css={fullscreenCss}>
-          <LogInWithLiveChat
-            onClick={() => authInstanceRef.current.openPopup()}
-          />
-        </div>
-      )}
-    >
-      <Suspense fallback={<Loading />}>
+    <Suspense fallback={<Loading />}>
+      <Auth
+        clientId={LC_CLIENT_ID}
+        signIn={authInstanceRef => (
+          <div css={fullscreenCss}>
+            <LogInWithLiveChat
+              onClick={() => authInstanceRef.current.openPopup()}
+            />
+          </div>
+        )}
+      >
         <Router>
           <Install exact path="install/*" />
           <Details exact path="details/*" />
-          <Checkout exact path="checkout/*" />
         </Router>
-      </Suspense>
-    </Auth>
+      </Auth>
+      <Router>
+        <Checkout exact path="checkout/*" />
+      </Router>
+    </Suspense>
   );
 }
 
