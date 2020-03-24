@@ -160,7 +160,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
           }
         ]
       };
-      if (vals.image !== "") {
+      if (vals.image) {
         event.elements[0].image = { url: vals.image };
       }
       sendEvent(profileRef.current.chat.chat_id, event);
