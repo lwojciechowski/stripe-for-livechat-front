@@ -24,25 +24,29 @@ const fullscreenCss = css`
   align-items: center;
 `;
 
+const ProtectedRoute = ({ component: Component }) => {
+  return (
+    <Auth
+      clientId={LC_CLIENT_ID}
+      signIn={authInstanceRef => (
+        <div css={fullscreenCss}>
+          <LogInWithLiveChat
+            onClick={() => authInstanceRef.current.openPopup()}
+          />
+        </div>
+      )}
+    >
+      <Component />
+    </Auth>
+  );
+};
+
 function App() {
   return (
     <Suspense fallback={<Loading />}>
-      <Auth
-        clientId={LC_CLIENT_ID}
-        signIn={authInstanceRef => (
-          <div css={fullscreenCss}>
-            <LogInWithLiveChat
-              onClick={() => authInstanceRef.current.openPopup()}
-            />
-          </div>
-        )}
-      >
-        <Router>
-          <Install exact path="install/*" />
-          <Details exact path="details/*" />
-        </Router>
-      </Auth>
       <Router>
+        <ProtectedRoute component={Install} exact path="install/*" />
+        <ProtectedRoute component={Details} exact path="details/*" />
         <Checkout exact path="checkout/*" />
       </Router>
     </Suspense>
