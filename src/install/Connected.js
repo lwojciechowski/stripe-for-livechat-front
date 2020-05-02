@@ -1,4 +1,5 @@
 /**@jsx jsx */
+import React from 'react';
 import { useState } from "react";
 import { css, jsx } from "@emotion/core";
 import { ActionModal, Button } from "@livechat/design-system";
@@ -59,14 +60,14 @@ const Connected = ({ account, onDelete }) => {
           onClose={handleClose}
           heading="Disconnect Stripe"
           actions={
-            <>
+            <React.Fragment>
               <Button size="large" onClick={handleClose} secondary>
                 Cancel
               </Button>
               <Button size="large" onClick={onDelete} destructive>
                 Disconnect
               </Button>
-            </>
+            </React.Fragment>
           }
         >
           <div style={{ maxWidth: "400px" }}>

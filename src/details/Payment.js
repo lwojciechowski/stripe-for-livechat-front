@@ -215,7 +215,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
         }}
         validate={validate}
         render={({ handleSubmit, touched, errors, values }) => (
-          <>
+          <React.Fragment>
             <form onSubmit={handleSubmit}>
               {/*{JSON.stringify(values, null, " ")}*/}
               <Field
@@ -257,9 +257,9 @@ const Payment = ({ onClose, profileRef, customer }) => {
               >
                 <FieldArray name="items">
                   {({ fields }) => (
-                    <>
+                    <React.Fragment>
                       {fields.map((name, index) => (
-                        <>
+                        <React.Fragment>
                           <span className="item-title">
                             Item #{index + 1}{" "}
                             {fields.length > 1 && (
@@ -305,7 +305,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
                             </FieldGroup>
 
                             {values.items[index]?.type === "recurring" && (
-                              <>
+                              <React.Fragment>
                                 {plans.length === 0 && (
                                   <p>
                                     You have no plans configured in Stripe.
@@ -328,7 +328,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
                                   </p>
                                 )}
                                 {plans.length > 0 && (
-                                  <>
+                                  <React.Fragment>
                                     <Field name={`${name}.plan`}>
                                       {({ input, meta }) => (
                                         <SelectField
@@ -358,12 +358,12 @@ const Payment = ({ onClose, profileRef, customer }) => {
                                       labelText="Quantity"
                                       placeholder="1"
                                     />
-                                  </>
+                                  </React.Fragment>
                                 )}
-                              </>
+                              </React.Fragment>
                             )}
                             {values.items[index]?.type === "onetime" && (
-                              <>
+                              <React.Fragment>
                                 <FieldGroup inline stretch>
                                   <Field
                                     id={`${name}.name`}
@@ -430,10 +430,10 @@ const Payment = ({ onClose, profileRef, customer }) => {
                                     )}
                                   </Field>
                                 </FieldGroup>
-                              </>
+                              </React.Fragment>
                             )}
                           </div>
-                        </>
+                        </React.Fragment>
                       ))}
                       <LinkButton
                         onClick={e => {
@@ -446,7 +446,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
                       >
                         &#65291; Add another item
                       </LinkButton>
-                    </>
+                    </React.Fragment>
                   )}
                 </FieldArray>
               </FormGroup>
@@ -454,7 +454,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
                 Send
               </Button>
             </form>
-          </>
+          </React.Fragment>
         )}
       />
     </div>
