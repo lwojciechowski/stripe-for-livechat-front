@@ -24,7 +24,7 @@ const fullscreenCss = css`
   align-items: center;
 `;
 
-const ProtectedRoute = ({ component: Component }) => {
+const ProtectedRoute = ({ component: Component, ...rest }) => {
   return (
     <Auth
       clientId={LC_CLIENT_ID}
@@ -36,7 +36,7 @@ const ProtectedRoute = ({ component: Component }) => {
         </div>
       )}
     >
-      <Component />
+      <Component {...rest}/>
     </Auth>
   );
 };
