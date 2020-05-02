@@ -21,6 +21,7 @@ const Details = () => {
   const [loading, setLoading] = useState(true);
   const [match, setMatch] = useState(null);
   const [customers, setCustomers] = useState([]);
+  const [notConnected, setNotConnected] = useState(false);
 
   const fetchProfile = useCallback(async profile => {
     let customers = { data: [] };
@@ -29,7 +30,11 @@ const Details = () => {
         email: profile?.email,
         lc_id: profile?.id
       });
-    } catch (e) {}
+    } catch (e) {
+      if (e.response.status === 403) {
+        setNotConnected(true);
+      }
+    }
     setCustomers(customers.data.filter(c => !c.lc_exists));
     setMatch(customers.data.find(c => c.lc_exists));
     setLoading(false);
@@ -71,6 +76,14 @@ const Details = () => {
 
   if (loading) {
     return <Loading />;
+  }
+
+  if (notConnected) {
+    return (
+      <div css={containerCss}>
+        <p>Your account is not connected to Stripe. Please go to application Settings.</p>
+      </div>
+    );
   }
 
   return (
