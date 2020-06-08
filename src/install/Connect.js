@@ -31,6 +31,7 @@ const Connected = () => {
       <div>
         <ConnectWithStripe
           href={`https://connect.stripe.com/oauth/authorize?response_type=code&client_id=${STRIPE_CLIENT_ID}&scope=read_write`}
+          target="_blank"
         />
       </div>
     </div>

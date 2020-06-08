@@ -37,6 +37,7 @@ const containerCss = css`
     display: block;
     float: right;
     cursor: pointer;
+    margin-right: 8px;
   }
 
   .item {
@@ -416,7 +417,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
                                         getItemBody={getCurrencyItemBody}
                                         labelText="Currency"
                                         search
-                                        placeholder="Select currency"
+                                        placeholder="Select"
                                         getSelectedItemBody={
                                           getCurrencyItemBody
                                         }
