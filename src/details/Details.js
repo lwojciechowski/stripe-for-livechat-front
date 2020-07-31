@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from "react";
 import { createDetailsWidget } from "@livechat/agent-app-sdk";
 import {
   createCustomer,
-  getSubscriptions,
   linkCustomer,
   searchCustomer
 } from "../api";
