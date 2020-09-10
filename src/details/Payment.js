@@ -169,8 +169,8 @@ const Payment = ({ onClose, profileRef, customer }) => {
       }
       sendEvent(profileRef.current.chat.chat_id, event);
     }).catch(err => {
-      setStripeErr(err);
       console.log(err);
+      setStripeErr(err);
     });
   };
 
@@ -216,7 +216,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
 
       {stripeErr && (
         <Banner type="error" onClose={() => setStripeErr(null)}>
-          {stripeErr}
+          There was an error
         </Banner>
       )}
       <Form
