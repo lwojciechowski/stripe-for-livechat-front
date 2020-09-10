@@ -8,6 +8,7 @@ import { css, jsx } from "@emotion/core";
 import { Form, Field } from "react-final-form";
 import FFInputField from "./FFInputField";
 import {
+  Banner,
   Button,
   FieldGroup,
   FormGroup,
@@ -77,6 +78,7 @@ const getCurrencyItemBody = props => <div id={props.id}>{props.name}</div>;
 const Payment = ({ onClose, profileRef, customer }) => {
   const [plans, setPlans] = useState(null);
   const [country, setCountry] = useState(null);
+  const [stripeErr, setStripeErr] = useState(null);
 
   const fetchPlans = useCallback(async () => {
     const resp = await getPlans();
@@ -118,6 +120,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
   );
 
   const onSubmit = vals => {
+    setStripeErr(null);
     const params = {
       stripe_customer_id: customer.id
     };
@@ -165,6 +168,9 @@ const Payment = ({ onClose, profileRef, customer }) => {
         event.elements[0].image = { url: vals.image };
       }
       sendEvent(profileRef.current.chat.chat_id, event);
+    }).catch(err => {
+      setStripeErr(err);
+      console.log(err);
     });
   };
 
@@ -208,6 +214,11 @@ const Payment = ({ onClose, profileRef, customer }) => {
         <span>Send Payment</span>
       </Header>
 
+      {stripeErr && (
+        <Banner type="error" onClose={() => setStripeErr(null)}>
+          {stripeErr}
+        </Banner>
+      )}
       <Form
         onSubmit={onSubmit}
         mutators={arrayMutators}
