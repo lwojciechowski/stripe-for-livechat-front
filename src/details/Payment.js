@@ -78,7 +78,6 @@ const getCurrencyItemBody = props => <div id={props.id}>{props.name}</div>;
 const Payment = ({ onClose, profileRef, customer }) => {
   const [plans, setPlans] = useState(null);
   const [country, setCountry] = useState(null);
-  const [stripeErr, setStripeErr] = useState(null);
 
   const fetchPlans = useCallback(async () => {
     const resp = await getPlans();
@@ -120,7 +119,6 @@ const Payment = ({ onClose, profileRef, customer }) => {
   );
 
   const onSubmit = vals => {
-    setStripeErr(null);
     const params = {
       stripe_customer_id: customer.id
     };
@@ -169,8 +167,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
       }
       sendEvent(profileRef.current.chat.chat_id, event);
     }).catch(err => {
-      console.log(err);
-      setStripeErr(err);
+      return { stripe: err.response.data.message };
     });
   };
 
@@ -214,11 +211,6 @@ const Payment = ({ onClose, profileRef, customer }) => {
         <span>Send Payment</span>
       </Header>
 
-      {stripeErr && (
-        <Banner type="error" onClose={() => setStripeErr(null)}>
-          There was an error
-        </Banner>
-      )}
       <Form
         onSubmit={onSubmit}
         mutators={arrayMutators}
@@ -228,6 +220,11 @@ const Payment = ({ onClose, profileRef, customer }) => {
         validate={validate}
         render={({ handleSubmit, touched, errors, values }) => (
           <React.Fragment>
+            {errors.stripe && (
+                <Banner type="error" style={{ marginBottom: 15 }}>
+                  {errors.stripe}
+                </Banner>
+            )}
             <form onSubmit={handleSubmit}>
               {/*{JSON.stringify(values, null, " ")}*/}
               <Field
