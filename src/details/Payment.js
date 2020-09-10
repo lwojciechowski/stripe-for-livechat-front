@@ -21,6 +21,7 @@ import Loading from "../Loading";
 import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
 import LinkButton from "./LinkButton";
+import {FORM_ERROR} from "final-form";
 
 const containerCss = css`
   .back {
@@ -167,7 +168,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
       }
       sendEvent(profileRef.current.chat.chat_id, event);
     }).catch(err => {
-      return { stripe: err.response.data.message };
+      return { [FORM_ERROR]: err.response.data.message };
     });
   };
 
@@ -218,11 +219,11 @@ const Payment = ({ onClose, profileRef, customer }) => {
           items: [{ ...defaultItem, plan: plansItems[0]?.key }]
         }}
         validate={validate}
-        render={({ handleSubmit, touched, errors, values }) => (
+        render={({ handleSubmit, submitError, touched, errors, values }) => (
           <React.Fragment>
-            {errors.stripe && (
+            {submitError && (
                 <Banner type="error" style={{ marginBottom: 15 }}>
-                  {errors.stripe}
+                  {submitError}
                 </Banner>
             )}
             <form onSubmit={handleSubmit}>
