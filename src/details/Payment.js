@@ -141,7 +141,7 @@ const Payment = ({ onClose, profileRef, customer }) => {
       params.subscriptions = subs;
     }
 
-    createCheckoutSession(params).then(resp => {
+    return createCheckoutSession(params).then(resp => {
       const event = {
         type: "rich_message",
         template_id: "cards",
