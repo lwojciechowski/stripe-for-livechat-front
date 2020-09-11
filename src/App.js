@@ -12,6 +12,7 @@ import Loading from "./Loading";
 const Install = React.lazy(() => import("./install"));
 const Details = React.lazy(() => import("./details"));
 const Checkout = React.lazy(() => import("./checkout"));
+const Tutorial = React.lazy(() => import("./Tutorial.js"));
 
 const LC_CLIENT_ID = process.env.REACT_APP_LC_CLIENT_ID;
 
@@ -48,6 +49,8 @@ function App() {
         <ProtectedRoute component={Install} exact path="install/*" />
         <ProtectedRoute component={Details} exact path="details/*" />
         <Checkout exact path="checkout/*" />
+        <Tutorial exact path="tutorial" />
+
       </Router>
     </Suspense>
   );
