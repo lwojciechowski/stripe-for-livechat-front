@@ -9,17 +9,24 @@ const containerCss = css`
     .toc {
         background: #eee;
         border: 1px solid #ccc;
-        padding: 10px;
         border-radius: 10px;
         max-width: 400px;
         
-        li {
-            line-height: 1.5em;
+        ol {
+            margin-top: 5px;
+            li {
+                line-height: 2em;
+            }
+        }
+        
+        strong {
+            display: block;
+            margin: 20px 0 0 23px;
         }
     }
        
     ol li {
-        line-height: 1.3em; 
+        line-height: 1.5em; 
     }
     h2 {
         margin-top: 3em;
@@ -30,7 +37,6 @@ const containerCss = css`
         padding: 15px;
         border: 1px solid #771c09;
         border-radius: 10px;
-        
     }
 `
 
@@ -39,6 +45,7 @@ const Tutorial = () => {
         <div css={containerCss}>
             <h1>Stripe for LiveChat - Manual</h1>
             <div className="toc">
+                <strong>Table of Contents</strong>
                 <ol>
                     <li><a href="#install">Connect to Stripe</a></li>
                     <li><a href="#uninstall">Disconnect from Stripe</a></li>
