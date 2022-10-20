@@ -64,7 +64,7 @@ export const createCheckoutSession = params => {
 
 export const sendEvent = (chatId, event) => {
   return axios.post(
-    "https://api.livechatinc.com/v3.1/agent/action/send_event",
+    "https://api.livechatinc.com/v3.3/agent/action/send_event",
     { chat_id: chatId, event },
     getConfig()
   );
