@@ -79,6 +79,7 @@ const getCurrencyItemBody = props => <div id={props.id}>{props.name}</div>;
 const Payment = ({ onClose, profileRef, customer }) => {
   const [plans, setPlans] = useState(null);
   const [country, setCountry] = useState(null);
+  const [countryUnsupported, setCountryUnsupported] = useState(false);
 
   const fetchPlans = useCallback(async () => {
     const resp = await getPlans();
@@ -86,10 +87,15 @@ const Payment = ({ onClose, profileRef, customer }) => {
   }, []);
 
   const fetchCountry = useCallback(async () => {
-    const resp = await getCountry(
-      profileRef.current?.geolocation?.country_code || "US"
-    );
-    setCountry(resp.data);
+    setCountryUnsupported(false);
+    try {
+      const resp = await getCountry(
+          profileRef.current?.geolocation?.country_code || "US"
+      );
+      setCountry(resp.data);
+    } catch (e) {
+      setCountryUnsupported(true);
+    }
   }, [profileRef]);
 
   useEffect(() => {
@@ -203,6 +209,18 @@ const Payment = ({ onClose, profileRef, customer }) => {
 
   if (plans === null || country === null) {
     return <Loading />;
+  }
+
+  if (countryUnsupported) {
+    return (
+        <>
+          <Header>
+            <MdArrowBack className="back" onClick={onClose} />{" "}
+            <span>Send Payment</span>
+          </Header>
+          <p>Your customer is from country {profileRef.current?.geolocation?.country_code}. This country is currently not supported by Stripe.</p>
+        </>
+    );
   }
 
   return (
