@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AccountsSDK from "@livechat/accounts-sdk";
+import { authRef } from "./authRef";
 
 const LC_CLIENT_ID = process.env.REACT_APP_LC_CLIENT_ID;
 const sdk = new AccountsSDK({
@@ -14,7 +15,6 @@ const Auth = ({ children }) => {
       .authorizeData()
       .then((data) => {
         authRef.token = data.access_token;
-        authRef.scopes = data.scope.split(",");
         setAuth(data);
       })
       .catch((e) => {
@@ -34,7 +34,3 @@ const Auth = ({ children }) => {
 
 export const AuthContext = React.createContext(null);
 export default Auth;
-export const authRef = {
-  token: null,
-  scopes: [],
-};
