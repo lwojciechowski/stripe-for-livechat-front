@@ -4,40 +4,19 @@ import "./App.css";
 
 import React, { Suspense } from "react";
 import { Router } from "@reach/router";
-import { css, jsx } from "@emotion/core";
-import Auth from "./Auth";
-import LogInWithLiveChat from "./LoginWithLiveChat";
-import Loading from "./Loading";
+import { jsx } from "@emotion/core";
+import Auth from "./Auth.js";
+import Loading from "./Loading.js";
 
-const Install = React.lazy(() => import("./install"));
-const Details = React.lazy(() => import("./details"));
-const Checkout = React.lazy(() => import("./checkout"));
+const Install = React.lazy(() => import("./install/index.js"));
+const Details = React.lazy(() => import("./details/index.js"));
+const Checkout = React.lazy(() => import("./checkout/index.js"));
 const Tutorial = React.lazy(() => import("./Tutorial.js"));
-
-const LC_CLIENT_ID = process.env.REACT_APP_LC_CLIENT_ID;
-
-const fullscreenCss = css`
-  position: fixed;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 
 const ProtectedRoute = ({ component: Component, ...rest }) => {
   return (
-    <Auth
-      clientId={LC_CLIENT_ID}
-      signIn={authInstanceRef => (
-        <div css={fullscreenCss}>
-          <LogInWithLiveChat
-            onClick={() => authInstanceRef.current.openPopup()}
-          />
-        </div>
-      )}
-    >
-      <Component {...rest}/>
+    <Auth>
+      <Component {...rest} />
     </Auth>
   );
 };
@@ -50,7 +29,6 @@ function App() {
         <ProtectedRoute component={Details} exact path="details/*" />
         <Checkout exact path="checkout/*" />
         <Tutorial exact path="tutorial" />
-
       </Router>
     </Suspense>
   );
