@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { css, jsx } from "@emotion/core";
 import { Button, Loader } from "@livechat/design-system";
 import { MdCheck, MdClose, MdLaunch } from "react-icons/md";
-import { getCharges, getSubscriptions } from "../api";
+import { useApi } from "../api";
 import Payment from "./Payment";
 import Header from "./Header";
 
@@ -54,6 +54,7 @@ const containerCss = css`
 `;
 
 const Profile = ({ customer, plans, profileRef }) => {
+  const api = useApi();
   const [state, setState] = useState("profile");
   const [charges, setCharges] = useState(null);
   const [subscriptions, setSubscriptions] = useState(null);
@@ -62,15 +63,15 @@ const Profile = ({ customer, plans, profileRef }) => {
     setCharges(null);
     setSubscriptions(null);
     (async () => {
-      let resp = await getCharges({ stripe_customer_id: customer.id });
+      let resp = await api.getCharges({ stripe_customer_id: customer.id });
       setCharges(resp.data);
 
-      resp = await getSubscriptions({
-        stripe_customer_id: customer.id
+      resp = await api.getSubscriptions({
+        stripe_customer_id: customer.id,
       });
       setSubscriptions(resp.data);
     })();
-  }, [customer]);
+  }, [customer, api]);
 
   const handleSendSubscription = () => {
     setState("subscription");
@@ -148,7 +149,7 @@ const Profile = ({ customer, plans, profileRef }) => {
           {charges === null && <Loader size="small" />}
           {charges?.length === 0 && <em>No charges</em>}
           {charges?.length > 0 &&
-            charges.map(c => (
+            charges.map((c) => (
               <tr>
                 <td className={`charge ${c.status}`}>
                   {c.status === "succeeded" ? <MdCheck /> : <MdClose />}
@@ -169,7 +170,7 @@ const Profile = ({ customer, plans, profileRef }) => {
       {subscriptions?.length === 0 && <em>No active subscription</em>}
       {subscriptions?.length > 0 && (
         <div className="subscription">
-          {subscriptions.map(s => (
+          {subscriptions.map((s) => (
             <table className="data">
               <tbody>
                 <tr>

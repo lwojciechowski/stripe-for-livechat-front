@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import queryString from "query-string";
 import { navigate, Router } from "@reach/router";
-import {
-  createInstallation,
-  deleteInstallation,
-  getInstallation
-} from "../api";
+import { useApi } from "../api";
 import Loading from "../Loading";
 import Connected from "./Connected";
 import Connect from "./Connect";
 
 const Install = ({ location }) => {
+  const api = useApi();
   const [loading, setLoading] = useState(true);
   const [account, setAccount] = useState(null);
   const [queryParams] = useState(queryString.parse(location.search));
@@ -18,11 +15,11 @@ const Install = ({ location }) => {
   useEffect(() => {
     (async () => {
       if (queryParams.code) {
-        await createInstallation(queryParams.code);
+        await api.createInstallation(queryParams.code);
       }
 
       try {
-        const resp = await getInstallation();
+        const resp = await api.getInstallation();
         setAccount(resp.data);
         await navigate("/install/connected");
       } catch (e) {
@@ -30,7 +27,7 @@ const Install = ({ location }) => {
       }
       setLoading(false);
     })();
-  }, [queryParams]);
+  }, [queryParams, api]);
 
   if (loading) {
     return <Loading />;
@@ -38,7 +35,7 @@ const Install = ({ location }) => {
 
   const handleDelete = () => {
     (async () => {
-      await deleteInstallation();
+      await api.deleteInstallation();
       setAccount(null);
       await navigate("/install");
     })();
