@@ -13,15 +13,15 @@ import {
   FieldGroup,
   FormGroup,
   RadioButton,
-  SelectField
+  SelectField,
 } from "@livechat/design-system";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { createCheckoutSession, getCountry, getPlans, sendEvent } from "../api";
+import { useApi } from "../api";
 import Loading from "../Loading";
 import arrayMutators from "final-form-arrays";
 import { FieldArray } from "react-final-form-arrays";
 import LinkButton from "./LinkButton";
-import {FORM_ERROR} from "final-form";
+import { FORM_ERROR } from "final-form";
 
 const containerCss = css`
   .back {
@@ -64,39 +64,40 @@ const containerCss = css`
 
 const defaultItem = {
   type: "recurring",
-  quantity: "1"
+  quantity: "1",
 };
 
-const getPlanItemBody = props => (
+const getPlanItemBody = (props) => (
   <div id={props.id}>
     {props.productName}
     {props.planNickname && <span>&nbsp;- {props.planNickname}</span>}
   </div>
 );
 
-const getCurrencyItemBody = props => <div id={props.id}>{props.name}</div>;
+const getCurrencyItemBody = (props) => <div id={props.id}>{props.name}</div>;
 
 const Payment = ({ onClose, profileRef, customer }) => {
+  const api = useApi();
   const [plans, setPlans] = useState(null);
   const [country, setCountry] = useState(null);
   const [countryUnsupported, setCountryUnsupported] = useState(false);
 
   const fetchPlans = useCallback(async () => {
-    const resp = await getPlans();
+    const resp = await api.getPlans();
     setPlans(resp.data);
-  }, []);
+  }, [api]);
 
   const fetchCountry = useCallback(async () => {
     setCountryUnsupported(false);
     try {
-      const resp = await getCountry(
-          profileRef.current?.geolocation?.country_code || "US"
+      const resp = await api.getCountry(
+        profileRef.current?.geolocation?.country_code || "US"
       );
       setCountry(resp.data);
     } catch (e) {
       setCountryUnsupported(true);
     }
-  }, [profileRef]);
+  }, [profileRef, api]);
 
   useEffect(() => {
     fetchPlans();
@@ -105,80 +106,83 @@ const Payment = ({ onClose, profileRef, customer }) => {
 
   const plansItems = useMemo(
     () =>
-      plans?.map(p => ({
+      plans?.map((p) => ({
         key: p.id,
         props: {
           name: p.product.name + p.nickname,
           productName: p.product.name,
-          planNickname: p.nickname
-        }
+          planNickname: p.nickname,
+        },
       })),
     [plans]
   );
 
   const currencyItems = useMemo(
     () =>
-      country?.supported_payment_currencies.map(c => ({
+      country?.supported_payment_currencies.map((c) => ({
         key: c,
-        props: { id: c, name: c.toUpperCase() }
+        props: { id: c, name: c.toUpperCase() },
       })),
     [country]
   );
 
-  const onSubmit = vals => {
+  const onSubmit = (vals) => {
     const params = {
-      stripe_customer_id: customer.id
+      stripe_customer_id: customer.id,
     };
     const items = vals.items
-      .filter(i => i.type === "onetime")
-      .map(i => ({
+      .filter((i) => i.type === "onetime")
+      .map((i) => ({
         name: i.name,
         quantity: parseInt(i.quantity, 10),
         amount: parseFloat(i.amount?.replace(",", ".")) * 100,
-        currency: i.currency
+        currency: i.currency,
       }));
     if (items.length > 0) {
       params.items = items;
     }
 
     const subs = vals.items
-      .filter(i => i.type === "recurring")
-      .map(i => ({ plan: i.plan, quantity: parseInt(i.quantity) }));
+      .filter((i) => i.type === "recurring")
+      .map((i) => ({ plan: i.plan, quantity: parseInt(i.quantity) }));
     if (subs.length > 0) {
       params.subscriptions = subs;
     }
 
-    return createCheckoutSession(params).then(resp => {
-      const event = {
-        type: "rich_message",
-        template_id: "cards",
-        elements: [
-          {
-            title: vals.title,
-            subtitle: vals.subtitle,
-            buttons: [
-              {
-                type: "webview",
-                text: "Buy now",
-                postback_id: "open_url",
-                user_ids: [],
-                value: `https://stripe-for-livechat.99bits.xyz/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`,
-                webview_height: "compact"
-              }
-            ]
-          }
-        ]
-      };
-      if (vals.image) {
-        event.elements[0].image = { url: vals.image };
-      }
-      sendEvent(profileRef.current.chat.chat_id, event);
-    }).catch(err => {
-      return { [FORM_ERROR]: err.response.data.message };
-    });
+    return api
+      .createCheckoutSession(params)
+      .then((resp) => {
+        const event = {
+          type: "rich_message",
+          template_id: "cards",
+          elements: [
+            {
+              title: vals.title,
+              subtitle: vals.subtitle,
+              buttons: [
+                {
+                  type: "webview",
+                  text: "Buy now",
+                  postback_id: "open_url",
+                  user_ids: [],
+                  value: `https://stripe-for-livechat.99bits.xyz/checkout/start?session_id=${resp.data.session_id}&account_id=${resp.data.account_id}`,
+                  webview_height: "compact",
+                },
+              ],
+            },
+          ],
+        };
+        if (vals.image) {
+          event.elements[0].image = { url: vals.image };
+        }
+        api.sendEvent(profileRef.current.chat.chat_id, event);
+      })
+      .catch((err) => {
+        return { [FORM_ERROR]: err.response.data.message };
+      });
   };
 
-  const validate = vals => {
+  const validate = (vals) => {
     const errors = {};
 
     if (!vals.title && !vals.subtitle && !vals.image) {
@@ -213,13 +217,17 @@ const Payment = ({ onClose, profileRef, customer }) => {
 
   if (countryUnsupported) {
     return (
-        <>
-          <Header>
-            <MdArrowBack className="back" onClick={onClose} />{" "}
-            <span>Send Payment</span>
-          </Header>
-          <p>Your customer is from country {profileRef.current?.geolocation?.country_code}. This country is currently not supported by Stripe.</p>
-        </>
+      <>
+        <Header>
+          <MdArrowBack className="back" onClick={onClose} />{" "}
+          <span>Send Payment</span>
+        </Header>
+        <p>
+          Your customer is from country{" "}
+          {profileRef.current?.geolocation?.country_code}. This country is
+          currently not supported by Stripe.
+        </p>
+      </>
     );
   }
 
@@ -234,15 +242,15 @@ const Payment = ({ onClose, profileRef, customer }) => {
         onSubmit={onSubmit}
         mutators={arrayMutators}
         initialValues={{
-          items: [{ ...defaultItem, plan: plansItems[0]?.key }]
+          items: [{ ...defaultItem, plan: plansItems[0]?.key }],
         }}
         validate={validate}
         render={({ handleSubmit, submitError, touched, errors, values }) => (
           <React.Fragment>
             {submitError && (
-                <Banner type="error" style={{ marginBottom: 15 }}>
-                  {submitError}
-                </Banner>
+              <Banner type="error" style={{ marginBottom: 15 }}>
+                {submitError}
+              </Banner>
             )}
             <form onSubmit={handleSubmit}>
               {/*{JSON.stringify(values, null, " ")}*/}
@@ -464,11 +472,11 @@ const Payment = ({ onClose, profileRef, customer }) => {
                         </React.Fragment>
                       ))}
                       <LinkButton
-                        onClick={e => {
+                        onClick={(e) => {
                           e.preventDefault();
                           fields.push({
                             ...defaultItem,
-                            plan: plansItems[0]?.key
+                            plan: plansItems[0]?.key,
                           });
                         }}
                       >

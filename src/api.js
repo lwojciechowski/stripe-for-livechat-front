@@ -1,82 +1,134 @@
-import { authRef } from "./authRef";
+import { useCallback, useContext, useMemo } from "react";
 import axios from "axios";
+
+import { AuthContext } from "./Auth";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
-export const createInstallation = stripeCode => {
-  return axios.post(
-    `${API_URL}/installation`,
-    { stripe_code: stripeCode },
-    getConfig()
-  );
-};
+const useAuth = () => {
+  const auth = useContext(AuthContext);
 
-export const getInstallation = () => {
-  return axios.get(`${API_URL}/installation`, getConfig());
-};
-
-export const deleteInstallation = () => {
-  return axios.delete(`${API_URL}/installation`, getConfig());
-};
-
-export const searchCustomer = params => {
-  return axios.get(`${API_URL}/customers`, getConfig({ params }));
-};
-
-export const createCustomer = params => {
-  return axios.post(`${API_URL}/customers`, params, getConfig());
-};
-
-export const getCharges = params => {
-  return axios.get(`${API_URL}/customers/charges`, getConfig({ params }));
-};
-
-export const getSubscriptions = params => {
-  return axios.get(`${API_URL}/customers/subscriptions`, getConfig({ params }));
-};
-
-export const linkCustomer = (stripeId, lcId) => {
-  return axios.post(
-    `${API_URL}/customers/link`,
-    {
-      stripe_id: stripeId,
-      lc_id: lcId
+  const checkAuth = useCallback(
+    (err) => {
+      if (!auth) {
+        return;
+      }
+      if (err.response?.status === 403) {
+        auth.clear();
+      }
+      throw err;
     },
-    getConfig()
+    [auth]
   );
+
+  const headers = useMemo(() => {
+    if (!auth) {
+      return;
+    }
+    return getHeadersConfig({
+      headers: {
+        Authorization: `Bearer ${auth.access_token}`,
+        "X-Region": auth.access_token.split(":")?.[0],
+      },
+    });
+  }, [auth]);
+
+  return useMemo(() => ({ checkAuth, headers }), [checkAuth, headers]);
 };
 
-export const getPlans = () => {
-  return axios.get(`${API_URL}/plans`, getConfig());
+export const useApi = () => {
+  const { checkAuth, headers } = useAuth();
+
+  return {
+    createInstallation: (stripeCode) => {
+      return axios
+        .post(`${API_URL}/installation`, { stripe_code: stripeCode }, headers)
+        .catch(checkAuth);
+    },
+
+    getInstallation: () => {
+      return axios.get(`${API_URL}/installation`, headers).catch(checkAuth);
+    },
+
+    deleteInstallation: () => {
+      return axios.delete(`${API_URL}/installation`, headers).catch(checkAuth);
+    },
+
+    searchCustomer: (params) => {
+      return axios
+        .get(`${API_URL}/customers`, params, headers)
+        .catch(checkAuth);
+    },
+
+    createCustomer: (params) => {
+      return axios
+        .post(`${API_URL}/customers`, params, headers)
+        .catch(checkAuth);
+    },
+
+    getCharges: (params) => {
+      return axios
+        .get(`${API_URL}/customers/charges`, params, headers)
+        .catch(checkAuth);
+    },
+
+    getSubscriptions: (params) => {
+      return axios
+        .get(`${API_URL}/customers/subscriptions`, params, headers)
+        .catch(checkAuth);
+    },
+
+    linkCustomer: (stripeId, lcId) => {
+      return axios
+        .post(
+          `${API_URL}/customers/link`,
+          {
+            stripe_id: stripeId,
+            lc_id: lcId,
+          },
+          headers
+        )
+        .catch(checkAuth);
+    },
+
+    getPlans: () => {
+      return axios.get(`${API_URL}/plans`, headers).catch(checkAuth);
+    },
+
+    getCoupons: () => {
+      return axios.get(`${API_URL}/coupons`, headers).catch(checkAuth);
+    },
+
+    getCountry: (code) => {
+      return axios
+        .get(`${API_URL}/country?code=${code}`, headers)
+        .catch(checkAuth);
+    },
+
+    createCheckoutSession: (params) => {
+      return axios
+        .post(`${API_URL}/checkout-session`, params, headers)
+        .catch(checkAuth);
+    },
+
+    sendEvent: (chatId, event) => {
+      return axios
+        .post(
+          "https://api.livechatinc.com/v3.3/agent/action/send_event",
+          { chat_id: chatId, event },
+          headers
+        )
+        .catch(checkAuth);
+    },
+  };
 };
 
-export const getCoupons = () => {
-  return axios.get(`${API_URL}/coupons`, getConfig());
-};
-
-export const getCountry = code => {
-  return axios.get(`${API_URL}/country?code=${code}`, getConfig());
-};
-
-export const createCheckoutSession = params => {
-  return axios.post(`${API_URL}/checkout-session`, params, getConfig());
-};
-
-export const sendEvent = (chatId, event) => {
-  return axios.post(
-    "https://api.livechatinc.com/v3.3/agent/action/send_event",
-    { chat_id: chatId, event },
-    getConfig()
-  );
-};
-
-const getConfig = params => {
+const getHeadersConfig = (params) => {
   return {
     ...params,
     headers: {
-      Authorization: `Bearer ${authRef.token}`,
       "Content-Type": "application/json",
-      ...params?.headers
-    }
+      ...params?.headers,
+    },
   };
 };
