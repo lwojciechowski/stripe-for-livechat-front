@@ -59,7 +59,7 @@ export const useApi = () => {
 
       searchCustomer: (params) => {
         return axios
-          .get(`${API_URL}/customers`, params, headers)
+          .get(`${API_URL}/customers`, { ...params, ...headers })
           .catch(checkAuth);
       },
 
@@ -71,13 +71,13 @@ export const useApi = () => {
 
       getCharges: (params) => {
         return axios
-          .get(`${API_URL}/customers/charges`, params, headers)
+          .get(`${API_URL}/customers/charges`, { ...params, ...headers })
           .catch(checkAuth);
       },
 
       getSubscriptions: (params) => {
         return axios
-          .get(`${API_URL}/customers/subscriptions`, params, headers)
+          .get(`${API_URL}/customers/subscriptions`, { ...params, ...headers })
           .catch(checkAuth);
       },
 
