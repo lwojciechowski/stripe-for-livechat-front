@@ -6,13 +6,13 @@ const LC_CLIENT_ID = process.env.REACT_APP_LC_CLIENT_ID;
 
 const getToken = () => {
   try {
-    const entry = JSON.parse(window.sessionStorage.getItem("auth"));
+    const entry = JSON.parse(window.localStorage.getItem("auth"));
     if (!entry.auth.scopes) {
       return null;
     }
 
     if (Date.now() / 1000 > entry.expire) {
-      sessionStorage.removeItem("auth");
+      localStorage.removeItem("auth");
       return null;
     }
 
@@ -24,7 +24,7 @@ const getToken = () => {
 
 const setToken = (data) => {
   try {
-    window.sessionStorage.setItem(
+    window.localStorage.setItem(
       "auth",
       JSON.stringify({
         auth: data,
@@ -36,7 +36,7 @@ const setToken = (data) => {
 
 const clearToken = () => {
   try {
-    window.sessionStorage.removeItem("auth");
+    window.localStorage.removeItem("auth");
   } catch (e) {}
 };
 
