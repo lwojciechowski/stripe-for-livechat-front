@@ -1,7 +1,8 @@
-/**@jsx jsx */
+/** @jsxImportSource @emotion/core */
+
 import React from 'react';
 import { useState } from "react";
-import { css, jsx } from "@emotion/core";
+import { css } from "@emotion/core";
 import { ActionModal, Button } from "@livechat/design-system";
 
 const containerCss = css`

@@ -1,10 +1,9 @@
-/**@jsx jsx*/
+/** @jsxImportSource @emotion/core */
 
 import "./App.css";
 
 import React, { Suspense } from "react";
 import { Router } from "@reach/router";
-import { jsx } from "@emotion/core";
 import Auth from "./Auth.js";
 import Loading from "./Loading.js";
 

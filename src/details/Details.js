@@ -1,6 +1,7 @@
-/**@jsx jsx*/
+/** @jsxImportSource @emotion/core */
+
 import { useRef } from "react";
-import { css, jsx } from "@emotion/core";
+import { css } from "@emotion/core";
 import { useCallback, useEffect, useState } from "react";
 import { createDetailsWidget } from "@livechat/agent-app-sdk";
 import { useApi } from "../api";

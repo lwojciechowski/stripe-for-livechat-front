@@ -1,6 +1,6 @@
-/**@jsx jsx */
+/** @jsxImportSource @emotion/core */
 
-import { css, jsx } from "@emotion/core";
+import { css } from "@emotion/core";
 import ConnectWithStripe from "./ConnectWithStripe";
 
 const STRIPE_CLIENT_ID = process.env.REACT_APP_STRIPE_CLIENT_ID;

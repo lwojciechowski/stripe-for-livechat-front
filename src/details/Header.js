@@ -1,5 +1,6 @@
-/**@jsx jsx*/
-import { jsx, css } from "@emotion/core";
+/** @jsxImportSource @emotion/core */
+
+import { css } from "@emotion/core";
 
 const headerCss = css`
   font-size: 16px;

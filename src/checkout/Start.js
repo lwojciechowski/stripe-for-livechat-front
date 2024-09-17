@@ -1,6 +1,7 @@
-/**@jsx jsx */
+/** @jsxImportSource @emotion/core */
+
 import { useCallback, useEffect, useRef, useState } from "react";
-import { css, jsx } from "@emotion/core";
+import { css } from "@emotion/core";
 import { Button } from "@livechat/design-system";
 import Loading from "../Loading";
 import createMomentsSDK from "@livechat/moments-sdk";

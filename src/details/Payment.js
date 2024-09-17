@@ -1,10 +1,11 @@
-/**@jsx jsx*/
+/** @jsxImportSource @emotion/core */
+
 // eslint-disable-next-line
 import React from "react";
 import Header from "./Header";
 import { MdArrowBack, MdLaunch } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { css, jsx } from "@emotion/core";
+import { css } from "@emotion/core";
 import { Form, Field } from "react-final-form";
 import FFInputField from "./FFInputField";
 import {

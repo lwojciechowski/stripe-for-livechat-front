@@ -1,6 +1,7 @@
-/**@jsx jsx*/
+/** @jsxImportSource @emotion/core */
+
 import { useEffect, useState } from "react";
-import { css, jsx } from "@emotion/core";
+import { css } from "@emotion/core";
 import { Button, Loader } from "@livechat/design-system";
 import { MdCheck, MdClose, MdLaunch } from "react-icons/md";
 import { useApi } from "../api";
