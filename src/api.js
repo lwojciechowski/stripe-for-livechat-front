@@ -13,7 +13,7 @@ const useAuth = () => {
       if (!auth) {
         return;
       }
-      if (err.response?.status === 403) {
+      if ([401].includes(err.response?.status)) {
         auth.clear();
       }
       throw err;
