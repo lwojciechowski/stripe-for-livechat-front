@@ -10,11 +10,17 @@ import Loading from "../Loading";
 
 const containerCss = css`
   padding: 10px;
+
+  p.warning {
+    text-align: center;
+    margin-top: 2em;
+    font-size: 20px;
+  }
 `;
 const Details = () => {
   const api = useApi();
   const profileRef = useRef(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(null);
   const [match, setMatch] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [notConnected, setNotConnected] = useState(false);
@@ -80,10 +86,20 @@ const Details = () => {
     return <Loading />;
   }
 
+  if (loading === null) {
+    return (
+    <div css={containerCss}>
+      <p className="warning">
+        Select customer to get started.
+      </p>
+    </div>
+    )
+  }
+
   if (notConnected) {
     return (
       <div css={containerCss}>
-        <p>
+        <p className="warning">
           Your account is not connected to Stripe. Please go to application
           Settings.
         </p>
