@@ -87,16 +87,6 @@ const Details = () => {
     return <Loading />;
   }
 
-  if (loading === null) {
-    return (
-    <div css={containerCss}>
-      <p className="warning">
-        Select customer to get started.
-      </p>
-    </div>
-    )
-  }
-
   if (notConnected) {
     return (
       <div css={containerCss}>
@@ -106,6 +96,16 @@ const Details = () => {
         </p>
       </div>
     );
+  }
+
+  if (loading === null) {
+    return (
+    <div css={containerCss}>
+      <p className="warning">
+        Select customer to get started.
+      </p>
+    </div>
+    )
   }
 
   return (
