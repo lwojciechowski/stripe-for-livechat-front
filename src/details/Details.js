@@ -102,7 +102,7 @@ const Details = () => {
     return (
     <div css={containerCss}>
       <p className="warning">
-        Select chat to get started.
+        Select a chat to get started.
       </p>
     </div>
     )
