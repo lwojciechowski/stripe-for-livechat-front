@@ -123,7 +123,7 @@ export const useApi = () => {
       sendEvent: (chatId, event) => {
         return axios
           .post(
-            "https://api.livechatinc.com/v3.3/agent/action/send_event",
+            "https://api.livechatinc.com/v3.6/agent/action/send_event",
             { chat_id: chatId, event },
             headers
           )
